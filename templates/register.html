@@ -1,33 +1,223 @@
 {% extends "base.html" %}
 {% block title %}Register · Coursework{% endblock %}
+
 {% block auth_content %}
 <div class="auth-card">
   <div class="auth-mark">C</div>
+
   <h1>Create your student account</h1>
-  <p class="auth-subtitle">Registration creates a student account. Instructor access is set up separately.</p>
+
+  <p class="auth-subtitle">
+    Registration creates a student account. Instructor access is set up separately.
+  </p>
 
   <form method="POST" action="{{ url_for('auth.register') }}">
+
     <div class="field">
       <label for="name">Full name</label>
-      <input type="text" id="name" name="name" value="{{ name|default('') }}" placeholder="Jane Doe" required autofocus>
+      <input
+        type="text"
+        id="name"
+        name="name"
+        value="{{ name|default('') }}"
+        placeholder="Jane Doe"
+        required
+        autofocus
+      >
     </div>
+
     <div class="field">
       <label for="email">Email</label>
-      <input type="email" id="email" name="email" value="{{ email|default('') }}" placeholder="you@school.edu" required>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        value="{{ email|default('') }}"
+        placeholder="you@school.edu"
+        required
+      >
     </div>
+
     <div class="field">
       <label for="password">Password</label>
-      <input type="password" id="password" name="password" placeholder="At least 6 characters" required>
+
+      <input
+        type="password"
+        id="password"
+        name="password"
+        placeholder="Create a strong password"
+        required
+      >
+
+      <div class="password-requirements">
+        <div class="requirements-title">Password requirements:</div>
+
+        <div class="password-rule" id="rule-length">
+          <span class="rule-icon">❌</span>
+          <span>At least 8 characters</span>
+        </div>
+
+        <div class="password-rule" id="rule-uppercase">
+          <span class="rule-icon">❌</span>
+          <span>At least one uppercase letter (A-Z)</span>
+        </div>
+
+        <div class="password-rule" id="rule-lowercase">
+          <span class="rule-icon">❌</span>
+          <span>At least one lowercase letter (a-z)</span>
+        </div>
+
+        <div class="password-rule" id="rule-number">
+          <span class="rule-icon">❌</span>
+          <span>At least one number (0-9)</span>
+        </div>
+
+        <div class="password-rule" id="rule-special">
+          <span class="rule-icon">❌</span>
+          <span>At least one special character (@, #, !, $...)</span>
+        </div>
+      </div>
     </div>
+
     <div class="field">
       <label for="confirm_password">Confirm password</label>
-      <input type="password" id="confirm_password" name="confirm_password" placeholder="Repeat password" required>
+
+      <input
+        type="password"
+        id="confirm_password"
+        name="confirm_password"
+        placeholder="Repeat password"
+        required
+      >
+
+      <div class="password-match" id="password-match"></div>
     </div>
-    <button type="submit" class="btn btn-primary btn-block">Create account</button>
+
+    <button type="submit" class="btn btn-primary btn-block">
+      Create account
+    </button>
+
   </form>
 
   <div class="auth-switch">
-    Already have an account? <a href="{{ url_for('auth.login') }}">Log in</a>
+    Already have an account?
+    <a href="{{ url_for('auth.login') }}">Log in</a>
   </div>
 </div>
+
+
+<style>
+.password-requirements {
+  margin-top: 10px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.03);
+  font-size: 13px;
+}
+
+.requirements-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.password-rule {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 5px 0;
+  transition: all 0.2s ease;
+}
+
+.password-rule.valid {
+  font-weight: 500;
+}
+
+.rule-icon {
+  width: 18px;
+  display: inline-block;
+}
+
+.password-match {
+  margin-top: 7px;
+  font-size: 13px;
+  min-height: 18px;
+}
+
+.password-match.valid {
+  font-weight: 500;
+}
+
+.password-match.invalid {
+  font-weight: 500;
+}
+</style>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const password = document.getElementById("password");
+  const confirmPassword = document.getElementById("confirm_password");
+
+  const rules = {
+    length: document.getElementById("rule-length"),
+    uppercase: document.getElementById("rule-uppercase"),
+    lowercase: document.getElementById("rule-lowercase"),
+    number: document.getElementById("rule-number"),
+    special: document.getElementById("rule-special")
+  };
+
+  const matchMessage = document.getElementById("password-match");
+
+  function updateRule(element, valid) {
+    const icon = element.querySelector(".rule-icon");
+
+    if (valid) {
+      icon.textContent = "✅";
+      element.classList.add("valid");
+    } else {
+      icon.textContent = "❌";
+      element.classList.remove("valid");
+    }
+  }
+
+  function validatePassword() {
+    const value = password.value;
+
+    updateRule(rules.length, value.length >= 8);
+    updateRule(rules.uppercase, /[A-Z]/.test(value));
+    updateRule(rules.lowercase, /[a-z]/.test(value));
+    updateRule(rules.number, /[0-9]/.test(value));
+    updateRule(rules.special, /[^A-Za-z0-9]/.test(value));
+  }
+
+  function validateMatch() {
+    const passwordValue = password.value;
+    const confirmValue = confirmPassword.value;
+
+    if (!confirmValue) {
+      matchMessage.textContent = "";
+      matchMessage.className = "password-match";
+      return;
+    }
+
+    if (passwordValue === confirmValue) {
+      matchMessage.textContent = "✅ Passwords match";
+      matchMessage.className = "password-match valid";
+    } else {
+      matchMessage.textContent = "❌ Passwords do not match";
+      matchMessage.className = "password-match invalid";
+    }
+  }
+
+  password.addEventListener("input", function () {
+    validatePassword();
+    validateMatch();
+  });
+
+  confirmPassword.addEventListener("input", validateMatch);
+
+});
+</script>
+
 {% endblock %}
