@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Register · Coursework{% endblock %}
+{% block auth_content %}
+<div class="auth-card">
+  <div class="auth-mark">C</div>
+  <h1>Create your student account</h1>
+  <p class="auth-subtitle">Registration creates a student account. Instructor access is set up separately.</p>
+
+  <form method="POST" action="{{ url_for('auth.register') }}">
+    <div class="field">
+      <label for="name">Full name</label>
+      <input type="text" id="name" name="name" value="{{ name|default('') }}" placeholder="Jane Doe" required autofocus>
+    </div>
+    <div class="field">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" value="{{ email|default('') }}" placeholder="you@school.edu" required>
+    </div>
+    <div class="field">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="At least 6 characters" required>
+    </div>
+    <div class="field">
+      <label for="confirm_password">Confirm password</label>
+      <input type="password" id="confirm_password" name="confirm_password" placeholder="Repeat password" required>
+    </div>
+    <button type="submit" class="btn btn-primary btn-block">Create account</button>
+  </form>
+
+  <div class="auth-switch">
+    Already have an account? <a href="{{ url_for('auth.login') }}">Log in</a>
+  </div>
+</div>
+{% endblock %}

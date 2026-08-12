@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Edit Assignment · Coursework{% endblock %}
+{% block page_title %}Edit Assignment{% endblock %}
+{% block content %}
+
+<div class="card" style="max-width: 640px;">
+  <form method="POST" action="{{ url_for('instructor.edit_assignment', assignment_id=assignment.id) }}" enctype="multipart/form-data">
+    <div class="field">
+      <label for="title">Title</label>
+      <input type="text" id="title" name="title" value="{{ assignment.title }}" required autofocus>
+    </div>
+
+    <div class="field">
+      <label for="description">Description / Instructions</label>
+      <textarea id="description" name="description" rows="6" required>{{ assignment.description }}</textarea>
+    </div>
+
+    <div class="field">
+      <label for="deadline">Deadline</label>
+      <input type="datetime-local" id="deadline" name="deadline" value="{{ assignment.deadline.strftime('%Y-%m-%dT%H:%M') }}" required>
+    </div>
+
+    <div class="field">
+      <label for="max_grade">Maximum Grade</label>
+      <input type="number" id="max_grade" name="max_grade" min="1" value="{{ assignment.max_grade }}" required>
+    </div>
+
+    {% if assignment.attachment %}
+    <div class="field">
+      <label>Current attachment</label>
+      <div class="attachment-row">
+        <div class="file-chip">
+          <span class="file-icon">FILE</span>
+          {{ assignment.attachment_original_name or 'Attachment' }}
+        </div>
+        <a href="{{ url_for('instructor.download_attachment', assignment_id=assignment.id) }}" class="btn btn-secondary btn-sm">Download</a>
+      </div>
+      <label class="checkbox-row mt-16">
+        <input type="checkbox" name="remove_attachment">
+        Remove this attachment
+      </label>
+    </div>
+    {% endif %}
+
+    <div class="field">
+      <label for="attachment">{{ 'Replace attachment' if assignment.attachment else 'Attachment (optional)' }}</label>
+      <input type="file" id="attachment" name="attachment">
+      <div class="field-hint">Allowed: PDF, DOC(X), PPT(X), XLS(X), ZIP, images. Max 16 MB.</div>
+    </div>
+
+    <div class="row-actions">
+      <button type="submit" class="btn btn-primary">Save Changes</button>
+      <a href="{{ url_for('instructor.dashboard') }}" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

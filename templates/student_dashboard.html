@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}My Assignments · Coursework{% endblock %}
+{% block page_title %}My Assignments{% endblock %}
+{% block content %}
+
+<div class="card">
+  <div class="card-header">
+    <h2>All assignments</h2>
+  </div>
+
+  {% if rows %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Assignment</th>
+          <th>Deadline</th>
+          <th>Status</th>
+          <th>Grade</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+        <tr>
+          <td data-label="Assignment" class="cell-title">{{ row.assignment.title }}</td>
+          <td data-label="Deadline" class="cell-muted">{{ row.assignment.deadline.strftime('%b %d, %Y · %I:%M %p') }}</td>
+          <td data-label="Status">
+            {% if row.status == 'Not Submitted' %}
+              <span class="badge badge-not-submitted">Not Submitted</span>
+            {% elif row.status == 'Submitted' %}
+              <span class="badge badge-submitted">Submitted</span>
+            {% else %}
+              <span class="badge badge-graded">Graded</span>
+            {% endif %}
+          </td>
+          <td data-label="Grade" class="cell-muted">
+            {% if row.submission and row.submission.grade is not none %}
+              {{ row.submission.grade }}/{{ row.assignment.max_grade }}
+            {% else %}
+              &mdash;
+            {% endif %}
+          </td>
+          <td data-label="">
+            <a href="{{ url_for('student.assignment_detail', assignment_id=row.assignment.id) }}" class="btn btn-secondary btn-sm">Open</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <h3>No assignments yet</h3>
+    <p>Your instructor hasn't posted any assignments yet. Check back later.</p>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

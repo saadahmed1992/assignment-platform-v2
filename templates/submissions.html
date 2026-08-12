@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Submissions · {{ assignment.title }}{% endblock %}
+{% block page_title %}Submissions{% endblock %}
+{% block content %}
+
+<div class="card">
+  <div class="detail-header">
+    <div>
+      <h1 style="font-size: 19px; margin-bottom: 4px;">{{ assignment.title }}</h1>
+      <span class="text-muted" style="font-size: 13px;">Deadline: {{ assignment.deadline.strftime('%b %d, %Y · %I:%M %p') }} &middot; Max grade {{ assignment.max_grade }}</span>
+    </div>
+    <a href="{{ url_for('instructor.dashboard') }}" class="btn btn-secondary btn-sm">Back to dashboard</a>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h2>Students ({{ rows|length }})</h2>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Student</th>
+          <th>Status</th>
+          <th>Submitted</th>
+          <th>Grade</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+        <tr>
+          <td data-label="Student" class="cell-title">{{ row.student.name }}<br><span class="cell-muted" style="font-weight: 400; font-size: 12.5px;">{{ row.student.email }}</span></td>
+          <td data-label="Status">
+            {% if row.status == 'Not Submitted' %}
+              <span class="badge badge-not-submitted">Not Submitted</span>
+            {% elif row.status == 'Submitted' %}
+              <span class="badge badge-submitted">Submitted</span>
+            {% else %}
+              <span class="badge badge-graded">Graded</span>
+            {% endif %}
+          </td>
+          <td data-label="Submitted" class="cell-muted">
+            {% if row.submission %}{{ row.submission.submitted_at.strftime('%b %d, %I:%M %p') }}{% else %}&mdash;{% endif %}
+          </td>
+          <td data-label="Grade" class="cell-muted">
+            {% if row.submission and row.submission.grade is not none %}
+              {{ row.submission.grade }}/{{ assignment.max_grade }}
+            {% else %}
+              &mdash;
+            {% endif %}
+          </td>
+          <td data-label="">
+            {% if row.submission %}
+              <a href="{{ url_for('instructor.submission_details', submission_id=row.submission.id) }}" class="btn btn-secondary btn-sm">Review</a>
+            {% else %}
+              <span class="text-muted" style="font-size: 12.5px;">&mdash;</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

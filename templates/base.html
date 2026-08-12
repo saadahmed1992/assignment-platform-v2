@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Coursework{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="{{ 'has-shell' if current_user.is_authenticated else 'auth-page' }}">
+
+{% if current_user.is_authenticated %}
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <span class="brand-mark">C</span>
+      <span class="brand-name">Coursework</span>
+    </div>
+
+    <nav class="nav-links">
+      {% if current_user.is_instructor %}
+        <a href="{{ url_for('instructor.dashboard') }}" class="nav-link {{ 'active' if request.endpoint == 'instructor.dashboard' }}">
+          <span class="nav-dot"></span>Dashboard
+        </a>
+        <a href="{{ url_for('instructor.create_assignment') }}" class="nav-link {{ 'active' if request.endpoint == 'instructor.create_assignment' }}">
+          <span class="nav-dot"></span>New Assignment
+        </a>
+        <a href="{{ url_for('instructor.students') }}" class="nav-link {{ 'active' if request.endpoint == 'instructor.students' }}">
+          <span class="nav-dot"></span>Students
+        </a>
+      {% else %}
+        <a href="{{ url_for('student.dashboard') }}" class="nav-link {{ 'active' if request.endpoint == 'student.dashboard' }}">
+          <span class="nav-dot"></span>My Assignments
+        </a>
+      {% endif %}
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-chip">
+        <span class="user-avatar">{{ current_user.name[:1]|upper }}</span>
+        <span class="user-meta">
+          <span class="user-name">{{ current_user.name }}</span>
+          <span class="user-role">{{ current_user.role|capitalize }}</span>
+        </span>
+      </div>
+      <a href="{{ url_for('auth.logout') }}" class="logout-link">Log out</a>
+    </div>
+  </aside>
+
+  <div class="main-area">
+    <header class="topbar">
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">&#9776;</button>
+      <div class="topbar-title">{% block page_title %}{% endblock %}</div>
+    </header>
+
+    <main class="content">
+      {% include "_flashes.html" %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+{% else %}
+  {% include "_flashes.html" %}
+  {% block auth_content %}{% endblock %}
+{% endif %}
+
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

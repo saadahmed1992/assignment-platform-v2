@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}New Assignment · Coursework{% endblock %}
+{% block page_title %}New Assignment{% endblock %}
+{% block content %}
+
+<div class="card" style="max-width: 640px;">
+  <form method="POST" action="{{ url_for('instructor.create_assignment') }}" enctype="multipart/form-data">
+    <div class="field">
+      <label for="title">Title</label>
+      <input type="text" id="title" name="title" value="{{ form.title|default('') }}" placeholder="e.g. Python Assignment 1" required autofocus>
+    </div>
+
+    <div class="field">
+      <label for="description">Description / Instructions</label>
+      <textarea id="description" name="description" rows="6" placeholder="Explain what students need to do..." required>{{ form.description|default('') }}</textarea>
+    </div>
+
+    <div class="field">
+      <label for="deadline">Deadline</label>
+      <input type="datetime-local" id="deadline" name="deadline" value="{{ form.deadline|default('') }}" required>
+    </div>
+
+    <div class="field">
+      <label for="max_grade">Maximum Grade</label>
+      <input type="number" id="max_grade" name="max_grade" min="1" value="{{ form.max_grade|default('100') }}" required>
+    </div>
+
+    <div class="field">
+      <label for="attachment">Attachment (optional)</label>
+      <input type="file" id="attachment" name="attachment">
+      <div class="field-hint">Allowed: PDF, DOC(X), PPT(X), XLS(X), ZIP, images. Max 16 MB.</div>
+    </div>
+
+    <div class="row-actions">
+      <button type="submit" class="btn btn-primary">Create Assignment</button>
+      <a href="{{ url_for('instructor.dashboard') }}" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

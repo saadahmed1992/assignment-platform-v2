@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Students · Coursework{% endblock %}
+{% block page_title %}Students{% endblock %}
+{% block content %}
+
+<div class="card">
+  <div class="card-header">
+    <h2>All students ({{ students|length }})</h2>
+  </div>
+
+  {% if students %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Submissions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for student in students %}
+        <tr>
+          <td data-label="Name" class="cell-title">{{ student.name }}</td>
+          <td data-label="Email" class="cell-muted">{{ student.email }}</td>
+          <td data-label="Submissions" class="cell-muted">{{ student.submissions|length }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <h3>No students yet</h3>
+    <p>Students will appear here once they register.</p>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

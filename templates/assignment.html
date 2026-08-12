@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block title %}{{ assignment.title }} · Coursework{% endblock %}
+{% block page_title %}Assignment{% endblock %}
+{% block content %}
+
+<div class="card">
+  <div class="detail-header">
+    <div>
+      <h1 style="font-size: 21px; margin-bottom: 4px;">{{ assignment.title }}</h1>
+      {% if assignment.is_past_deadline %}
+        <span class="badge badge-not-submitted">Deadline Passed</span>
+      {% else %}
+        <span class="badge badge-submitted">Open</span>
+      {% endif %}
+    </div>
+    <a href="{{ url_for('student.dashboard') }}" class="btn btn-secondary btn-sm">Back to dashboard</a>
+  </div>
+
+  <div class="detail-meta">
+    <div class="meta-item">
+      <span class="meta-label">Deadline</span>
+      <span class="meta-value">{{ assignment.deadline.strftime('%b %d, %Y · %I:%M %p') }}</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Max Grade</span>
+      <span class="meta-value">{{ assignment.max_grade }} points</span>
+    </div>
+  </div>
+
+  <h2 style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--ink-muted); margin-bottom: 10px;">Description &amp; Instructions</h2>
+  <div class="description-block mb-16">{{ assignment.description }}</div>
+
+  {% if assignment.attachment %}
+  <div class="attachment-row">
+    <div class="file-chip">
+      <span class="file-icon">FILE</span>
+      {{ assignment.attachment_original_name or 'Attachment' }}
+    </div>
+    <a href="{{ url_for('student.download_attachment', assignment_id=assignment.id) }}" class="btn btn-secondary btn-sm">Download</a>
+  </div>
+  {% endif %}
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h2>Your Submission</h2>
+  </div>
+
+  {% if submission %}
+    <div class="detail-meta">
+      <div class="meta-item">
+        <span class="meta-label">Submitted</span>
+        <span class="meta-value">{{ submission.submitted_at.strftime('%b %d, %Y · %I:%M %p') }}</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Status</span>
+        <span class="meta-value">
+          {% if submission.status == 'Graded' %}
+            <span class="badge badge-graded">Graded</span>
+          {% else %}
+            <span class="badge badge-submitted">Submitted</span>
+          {% endif %}
+        </span>
+      </div>
+    </div>
+
+    {% if submission.file %}
+    <div class="attachment-row mb-16">
+      <div class="file-chip">
+        <span class="file-icon">FILE</span>
+        {{ submission.original_filename or 'Your file' }}
+      </div>
+      <a href="{{ url_for('student.download_own_submission', submission_id=submission.id) }}" class="btn btn-secondary btn-sm">Download</a>
+    </div>
+    {% endif %}
+
+    {% if submission.comment %}
+    <div class="field">
+      <label>Your comment</label>
+      <div class="feedback-block">{{ submission.comment }}</div>
+    </div>
+    {% endif %}
+
+    {% if submission.grade is not none %}
+    <div class="field">
+      <label>Grade</label>
+      <div class="grade-display">
+        <span class="grade-num">{{ submission.grade }}</span>
+        <span class="grade-max">/ {{ assignment.max_grade }}</span>
+      </div>
+    </div>
+    {% endif %}
+
+    {% if submission.feedback %}
+    <div class="field">
+      <label>Instructor feedback</label>
+      <div class="feedback-block">{{ submission.feedback }}</div>
+    </div>
+    {% endif %}
+
+    {% if not assignment.is_past_deadline %}
+    <hr style="border: none; border-top: 1px solid var(--line); margin: 20px 0;">
+    <p class="text-muted" style="font-size: 13px;">You can replace your submission until the deadline.</p>
+    {% endif %}
+  {% endif %}
+
+  {% if not assignment.is_past_deadline %}
+  <form method="POST" action="{{ url_for('student.assignment_detail', assignment_id=assignment.id) }}" enctype="multipart/form-data">
+    <div class="field">
+      <label for="file">{{ 'Replace file' if submission else 'Upload file' }}</label>
+      <input type="file" id="file" name="file" {{ 'required' if not submission }}>
+      <div class="field-hint">Allowed: PDF, DOC(X), PPT(X), XLS(X), ZIP, images. Max 16 MB.</div>
+    </div>
+    <div class="field">
+      <label for="comment">Comment (optional)</label>
+      <textarea id="comment" name="comment" placeholder="Anything you'd like to add...">{{ submission.comment if submission else '' }}</textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">{{ 'Update Submission' if submission else 'Submit Assignment' }}</button>
+  </form>
+  {% elif not submission %}
+  <div class="empty-state">
+    <h3>Nothing submitted</h3>
+    <p>The deadline has passed and no submission was made.</p>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

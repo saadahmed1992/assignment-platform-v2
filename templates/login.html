@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Log in · Coursework{% endblock %}
+{% block auth_content %}
+<div class="auth-card">
+  <div class="auth-mark">C</div>
+  <h1>Welcome back</h1>
+  <p class="auth-subtitle">Log in to view your assignments and submissions.</p>
+
+  <form method="POST" action="{{ url_for('auth.login') }}">
+    <div class="field">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" placeholder="you@school.edu" required autofocus>
+    </div>
+    <div class="field">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="••••••••" required>
+    </div>
+    <button type="submit" class="btn btn-primary btn-block">Log in</button>
+  </form>
+
+  <div class="auth-switch">
+    Don't have an account? <a href="{{ url_for('auth.register') }}">Register</a>
+  </div>
+</div>
+{% endblock %}
